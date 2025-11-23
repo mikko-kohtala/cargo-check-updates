@@ -9,6 +9,7 @@ cargo install --path .
 ```
 
 Or using make:
+
 ```bash
 make install
 ```
@@ -16,22 +17,26 @@ make install
 ## Usage
 
 **Check for updates** (dry-run):
+
 ```bash
 ccu
 ```
 
 **Upgrade dependencies**:
+
 ```bash
 ccu -u
 ```
 
 **Filter specific packages**:
+
 ```bash
 ccu "serde*"
 ccu --reject "test-*"
 ```
 
 **Specify Cargo.toml path**:
+
 ```bash
 ccu --manifest-path path/to/Cargo.toml
 ```

@@ -11,6 +11,7 @@ Binary names: `ccu` and `cargo-check-updates`
 ## Purpose
 
 Unlike `cargo update` (which only updates Cargo.lock within semver constraints), this tool:
+
 - Updates version specifications in Cargo.toml itself
 - Can upgrade beyond existing semver ranges
 - Provides interactive mode for selective upgrades
@@ -78,6 +79,7 @@ make ci         # CI workflow
 ## Implementation Status
 
 ### ✅ Completed
+
 - **Cargo.toml parsing**: Extracts all dependencies (dependencies, dev-dependencies, build-dependencies)
 - **crates.io API integration**: Queries latest versions via REST API
 - **Version comparison**: Normalizes shorthand versions ("0.21" → "0.21.0") and compares with semver
@@ -87,6 +89,7 @@ make ci         # CI workflow
 - **Color-coded output**: Red (major), cyan (minor), green (patch) updates
 
 ### 🚧 Todo
+
 - Interactive mode (prompts user to select which packages to upgrade)
 - Doctor mode (runs tests after updates to detect breaking changes)
 - Better glob pattern support
@@ -95,10 +98,12 @@ make ci         # CI workflow
 ## Key Implementation Details
 
 ### Version Parsing Bug Fix
+
 Dependencies with shorthand versions ("0.21", "1.0") require normalization before semver parsing.
 The `normalize_version()` function handles this by appending `.0` as needed.
 
 ### Update Workflow
+
 1. Parse Cargo.toml with toml_edit (preserves formatting)
 2. Query crates.io API for each dependency in parallel (tokio::spawn)
 3. Normalize and compare versions (always suggest latest, ignoring semver constraints)
