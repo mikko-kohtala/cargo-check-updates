@@ -1,4 +1,4 @@
-.PHONY: all build check test fmt fmt-check clippy clippy-all install clean doc dev ci run release update audit help
+.PHONY: all build check compile test fmt fmt-check clippy clippy-all install clean doc dev ci run release update audit help
 
 # Default target
 all: check
@@ -11,8 +11,11 @@ build:
 release:
 	cargo build --release
 
-# Quick check (faster than build)
-check:
+# Run clippy and tests
+check: clippy test
+
+# Quick compilation check (faster than build)
+compile:
 	cargo check --all-targets
 
 # Run tests
@@ -77,9 +80,10 @@ audit:
 help:
 	@echo "Available targets:"
 	@echo "  make          - Run check (default)"
+	@echo "  make check    - Run clippy and tests"
+	@echo "  make compile  - Quick compilation check"
 	@echo "  make build    - Build in debug mode"
 	@echo "  make release  - Build in release mode"
-	@echo "  make check    - Quick compilation check"
 	@echo "  make test     - Run tests"
 	@echo "  make fmt      - Format code"
 	@echo "  make clippy   - Run linter"
