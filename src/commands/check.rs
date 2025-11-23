@@ -77,9 +77,10 @@ impl CheckCommand {
         let mut updates = Vec::new();
         for dep in &dependencies {
             if let Some(latest_version) = latest_versions.get(&dep.name) {
-                // Parse current version (strip operators)
+                // Parse current version (strip operators and normalize)
                 let current_version_str = self.strip_version_operator(&dep.version);
-                if let Ok(current_version) = Version::parse(&current_version_str) {
+                let normalized_version = self.normalize_version(&current_version_str);
+                if let Ok(current_version) = Version::parse(&normalized_version) {
                     // Only show if there's an update
                     if latest_version > &current_version {
                         updates.push((dep, current_version, latest_version.clone()));
@@ -162,6 +163,17 @@ impl CheckCommand {
             version[1..].to_string()
         } else {
             version.to_string()
+        }
+    }
+
+    /// Normalize version string to semver format (major.minor.patch)
+    /// Cargo allows shorthand like "0.21" or "2", but semver requires full format
+    fn normalize_version(&self, version: &str) -> String {
+        let parts: Vec<&str> = version.split('.').collect();
+        match parts.len() {
+            1 => format!("{}.0.0", parts[0]),  // "2" → "2.0.0"
+            2 => format!("{}.{}.0", parts[0], parts[1]),  // "0.21" → "0.21.0"
+            _ => version.to_string(),  // Already complete or invalid
         }
     }
 
