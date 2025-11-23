@@ -1,11 +1,23 @@
 use crate::error::Result;
 use reqwest::Client;
 use semver::Version;
+use serde::Deserialize;
 
 const CRATES_IO_API: &str = "https://crates.io/api/v1";
 
+#[derive(Deserialize, Debug)]
+struct CrateResponse {
+    #[serde(rename = "crate")]
+    crate_info: CrateInfo,
+}
+
+#[derive(Deserialize, Debug)]
+struct CrateInfo {
+    newest_version: String,
+}
+
+#[derive(Clone)]
 pub struct RegistryClient {
-    #[allow(dead_code)]
     client: Client,
 }
 
@@ -23,15 +35,25 @@ impl RegistryClient {
     pub async fn get_latest_version(&self, crate_name: &str) -> Result<Version> {
         let url = format!("{}/crates/{}", CRATES_IO_API, crate_name);
 
-        // TODO: Implement actual API call
-        // 1. Make GET request to crates.io API
-        // 2. Parse JSON response
-        // 3. Extract latest version from response
-        // 4. Return Version
+        // Make GET request to crates.io API
+        let response = self.client.get(&url).send().await?;
 
-        // Placeholder for now
-        let _ = url;
-        Ok(Version::new(0, 1, 0))
+        // Check if the request was successful
+        if !response.status().is_success() {
+            return Err(crate::error::CcuError::RegistryQuery(format!(
+                "Failed to fetch crate '{}': HTTP {}",
+                crate_name,
+                response.status()
+            )));
+        }
+
+        // Parse JSON response
+        let crate_response: CrateResponse = response.json().await?;
+
+        // Extract and parse version
+        let version = Version::parse(&crate_response.crate_info.newest_version)?;
+
+        Ok(version)
     }
 
     /// Get all versions of a crate from crates.io
