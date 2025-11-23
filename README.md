@@ -1,59 +1,75 @@
 # cargo-check-updates (ccu)
 
-Upgrade your Cargo.toml dependencies to the latest versions, regardless of existing version constraints.
-
-Similar to [npm-check-updates](https://github.com/raineorshine/npm-check-updates) for Node.js.
+Upgrade your Cargo.toml dependencies to the latest versions. Like [npm-check-updates](https://github.com/raineorshine/npm-check-updates) for Rust.
 
 ## Installation
 
 ```bash
+cargo install --path .
+```
+
+Or using make:
+```bash
 make install
 ```
 
-This installs both `ccu` and `cargo-check-updates` binaries.
+## Usage
 
-## Quick Start
-
-Check for available updates:
+**Check for updates** (dry-run):
 ```bash
 ccu
 ```
 
-Upgrade all dependencies:
+**Upgrade dependencies**:
 ```bash
 ccu -u
 ```
 
-Interactive mode:
+**Filter specific packages**:
 ```bash
-ccu -i
+ccu "serde*"
+ccu --reject "test-*"
 ```
+
+**Specify Cargo.toml path**:
+```bash
+ccu --manifest-path path/to/Cargo.toml
+```
+
+## Example Output
+
+```
+Checking Cargo.toml
+
+ clap         4.0.0  →  4.5.53
+ serde      1.0.100  →  1.0.228
+ tokio       1.20.0  →  1.47.2
+
+Run ccu -u to upgrade Cargo.toml
+```
+
+## Features
+
+✅ Upgrades beyond semver constraints (always suggests latest)
+✅ Color-coded output (red=major, cyan=minor, green=patch)
+✅ Parallel crates.io queries for speed
+✅ Preserves version operators (`^1.0` → `^2.0`)
+✅ Handles all dependency sections (dependencies, dev-dependencies, build-dependencies)
+✅ Filter/reject patterns for selective updates
+✅ Preserves TOML formatting
+
+🚧 Interactive mode (coming soon)
+🚧 Doctor mode with test validation (coming soon)
 
 ## Development
 
-Build the project:
 ```bash
-make build
+make build      # Build debug version
+make release    # Build release version
+make test       # Run tests
+make clippy     # Run linter
+make dev        # Format + lint + test
 ```
-
-Run checks and tests:
-```bash
-make dev
-```
-
-See all available commands:
-```bash
-make help
-```
-
-## Features (Planned)
-
-- Upgrade dependencies beyond semver constraints
-- Color-coded output (red=major, cyan=minor, green=patch)
-- Interactive mode for selective upgrades
-- Doctor mode to identify breaking changes
-- Workspace support
-- Flexible filtering by package name
 
 ## License
 

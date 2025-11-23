@@ -75,11 +75,32 @@ make ci         # CI workflow
 - Async functions for I/O operations
 - Comprehensive error messages for user-facing errors
 
-## Current Status
+## Implementation Status
 
-Foundation is complete with stub implementations. Actual logic to be implemented:
-- Cargo.toml parsing (extract dependencies)
-- crates.io API integration (query versions)
-- Version comparison and update logic
-- Interactive mode
-- Doctor mode with testing
+### ✅ Completed
+- **Cargo.toml parsing**: Extracts all dependencies (dependencies, dev-dependencies, build-dependencies)
+- **crates.io API integration**: Queries latest versions via REST API
+- **Version comparison**: Normalizes shorthand versions ("0.21" → "0.21.0") and compares with semver
+- **Update logic**: Preserves TOML formatting and version operators when upgrading
+- **Parallel queries**: Uses tokio to query multiple packages concurrently
+- **Filter/reject patterns**: Simple wildcard matching for selective updates
+- **Color-coded output**: Red (major), cyan (minor), green (patch) updates
+
+### 🚧 Todo
+- Interactive mode (prompts user to select which packages to upgrade)
+- Doctor mode (runs tests after updates to detect breaking changes)
+- Better glob pattern support
+- Workspace support (handle multiple Cargo.toml files)
+
+## Key Implementation Details
+
+### Version Parsing Bug Fix
+Dependencies with shorthand versions ("0.21", "1.0") require normalization before semver parsing.
+The `normalize_version()` function handles this by appending `.0` as needed.
+
+### Update Workflow
+1. Parse Cargo.toml with toml_edit (preserves formatting)
+2. Query crates.io API for each dependency in parallel (tokio::spawn)
+3. Normalize and compare versions (always suggest latest, ignoring semver constraints)
+4. Display color-coded results
+5. If `-u` flag: update Cargo.toml preserving operators and formatting
