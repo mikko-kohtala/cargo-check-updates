@@ -1,0 +1,27 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock (optional for binaries, but we include it)
+# Uncomment if you want to ignore it
+# Cargo.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test coverage
+tarpaulin-report.html
+cobertura.xml
+
+# Documentation build
+/doc/
+
+# Environment files
+.env
+.env.local
